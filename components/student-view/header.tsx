@@ -1,0 +1,58 @@
+import { GraduationCap, TvMinimalPlay } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
+import { useContext } from "react";
+import { AuthContext } from "@/context/auth-context";
+
+function StudentViewCommonHeader() {
+  const router = useRouter();
+  const authCtx = useContext(AuthContext);
+  const resetCredentials = authCtx?.resetCredentials ?? (() => {});
+
+  function handleLogout() {
+    resetCredentials();
+    sessionStorage.clear();
+  }
+
+  return (
+    <header className="flex items-center justify-between p-4 border-b relative">
+      <div className="flex items-center space-x-4">
+        <Link href="/home" className="flex items-center hover:text-black">
+          <GraduationCap className="h-8 w-8 mr-4 " />
+          <span className="font-extrabold md:text-xl text-[14px]">
+            LMS LEARN
+          </span>
+        </Link>
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost"
+            onClick={() => {
+              if (!location.pathname.includes("/courses"))
+                router.push("/courses");
+            }}
+            className="text-[14px] md:text-[16px] font-medium"
+          >
+            Explore Courses
+          </Button>
+        </div>
+      </div>
+      <div className="flex items-center space-x-4">
+        <div className="flex gap-4 items-center">
+          <div
+            onClick={() => router.push("/student-courses")}
+            className="flex cursor-pointer items-center gap-3"
+          >
+            <span className="font-extrabold md:text-xl text-[14px]">
+              My Courses
+            </span>
+            <TvMinimalPlay className="w-8 h-8 cursor-pointer" />
+          </div>
+          <Button onClick={handleLogout}>Sign Out</Button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+export default StudentViewCommonHeader;
