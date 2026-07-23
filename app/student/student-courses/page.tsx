@@ -47,7 +47,9 @@ function StudentCoursesPage() {
               <CardFooter>
                 <Button
                   onClick={() =>
-                    router.push(`/course-progress/${course?.courseId}`)
+                    router.push(
+                      `/student/course-progress?id=${course?.courseId}`
+                    )
                   }
                   className="flex-1"
                 >

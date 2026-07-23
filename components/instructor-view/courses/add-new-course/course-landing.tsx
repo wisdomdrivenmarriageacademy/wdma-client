@@ -14,7 +14,7 @@ function CourseLanding() {
       </CardHeader>
       <CardContent>
         <FormControls
-          formControls={courseLandingPageFormControls}
+          formControls={courseLandingPageFormControls as any}
           formData={courseLandingFormData}
           setFormData={setCourseLandingFormData}
         />

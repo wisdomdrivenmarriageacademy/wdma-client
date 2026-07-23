@@ -47,7 +47,7 @@ export default function SignInPage() {
           JSON.stringify(res.data.accessToken)
         );
         authCtx?.setAuth({ authenticate: true, user: res.data.user });
-        router.replace("/home");
+        router.replace("/student/home");
       } else {
         setError("Invalid credentials");
       }

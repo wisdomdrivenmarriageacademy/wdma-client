@@ -26,7 +26,7 @@ function RouteGuard({
       user?.role !== "instructor" &&
       (pathname.includes("instructor") || pathname.includes("/auth"))
     ) {
-      router.replace("/home");
+      router.replace("/student/home");
       return;
     }
 

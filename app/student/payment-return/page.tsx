@@ -1,38 +1,28 @@
 "use client";
 
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { captureAndFinalizePaymentService } from "@/services";
+import { verifyAndFinalizePaymentService } from "@/services";
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
-function PaypalPaymentReturnPage() {
+function PaystackPaymentReturnPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const paymentId = searchParams.get("paymentId") ?? "";
-  const payerId = searchParams.get("PayerID") ?? "";
+  const reference = searchParams.get("reference") ?? "";
 
   useEffect(() => {
-    if (paymentId && payerId) {
-      async function capturePayment() {
-        const orderId = JSON.parse(
-          sessionStorage.getItem("currentOrderId") ?? "null"
-        );
-
-        const response = await captureAndFinalizePaymentService(
-          paymentId,
-          payerId,
-          orderId
-        );
+    if (reference) {
+      async function verifyPayment() {
+        const response = await verifyAndFinalizePaymentService(reference);
 
         if (response?.success) {
-          sessionStorage.removeItem("currentOrderId");
-          router.replace("/student-courses");
+          router.replace("/student/student-courses");
         }
       }
 
-      capturePayment();
+      verifyPayment();
     }
-  }, [payerId, paymentId]);
+  }, [reference, router]);
 
   return (
     <Card>
@@ -43,4 +33,4 @@ function PaypalPaymentReturnPage() {
   );
 }
 
-export default PaypalPaymentReturnPage;
+export default PaystackPaymentReturnPage;

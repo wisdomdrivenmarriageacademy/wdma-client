@@ -24,7 +24,7 @@ import {
 import { Check, ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import Confetti from "react-confetti";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function StudentViewCourseProgressPage() {
   const router = useRouter();
@@ -37,12 +37,12 @@ function StudentViewCourseProgressPage() {
     useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isSideBarOpen, setIsSideBarOpen] = useState(true);
-  const params = useParams<{ id?: string }>();
+  const courseId = useSearchParams().get("id") ?? "";
 
   async function fetchCurrentCourseProgress() {
     const response = await getCurrentCourseProgressService(
       auth?.user?._id,
-      params?.id as string
+      courseId
     );
     if (response?.success) {
       if (!response?.data?.isPurchased) {
@@ -112,7 +112,7 @@ function StudentViewCourseProgressPage() {
 
   useEffect(() => {
     fetchCurrentCourseProgress();
-  }, [params?.id]);
+  }, [courseId]);
 
   useEffect(() => {
     if (currentLecture?.progressValue === 1) updateCourseProgress();
@@ -130,7 +130,7 @@ function StudentViewCourseProgressPage() {
       <div className="flex items-center justify-between p-4 bg-[#1c1d1f] border-b border-gray-700">
         <div className="flex items-center space-x-4">
           <Button
-            onClick={() => router.push("/student-courses")}
+            onClick={() => router.push("/student/student-courses")}
             className="text-black"
             variant="ghost"
             size="sm"
@@ -234,13 +234,13 @@ function StudentViewCourseProgressPage() {
         </DialogContent>
       </Dialog>
       <Dialog open={showCourseCompleteDialog}>
-        <DialogContent showOverlay={false} className="sm:w-[425px]">
+        <DialogContent className="sm:w-[425px]">
           <DialogHeader>
             <DialogTitle>Congratulations!</DialogTitle>
             <DialogDescription className="flex flex-col gap-3">
               <Label>You have completed the course</Label>
               <div className="flex flex-row gap-3">
-                <Button onClick={() => navigate("/student-courses")}>
+                <Button onClick={() => router.push("/student/student-courses")}>
                   My Courses Page
                 </Button>
                 <Button onClick={handleRewatchCourse}>Rewatch Course</Button>

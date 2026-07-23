@@ -18,7 +18,7 @@ function StudentViewCommonHeader() {
   return (
     <header className="flex items-center justify-between p-4 border-b relative">
       <div className="flex items-center space-x-4">
-        <Link href="/home" className="flex items-center hover:text-black">
+        <Link href="/student/home" className="flex items-center hover:text-black">
           <GraduationCap className="h-8 w-8 mr-4 " />
           <span className="font-extrabold md:text-xl text-[14px]">
             LMS LEARN
@@ -29,7 +29,7 @@ function StudentViewCommonHeader() {
             variant="ghost"
             onClick={() => {
               if (!location.pathname.includes("/courses"))
-                router.push("/courses");
+                router.push("/student/courses");
             }}
             className="text-[14px] md:text-[16px] font-medium"
           >
@@ -40,7 +40,7 @@ function StudentViewCommonHeader() {
       <div className="flex items-center space-x-4">
         <div className="flex gap-4 items-center">
           <div
-            onClick={() => router.push("/student-courses")}
+            onClick={() => router.push("/student/student-courses")}
             className="flex cursor-pointer items-center gap-3"
           >
             <span className="font-extrabold md:text-xl text-[14px]">

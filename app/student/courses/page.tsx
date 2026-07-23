@@ -21,7 +21,7 @@ import {
 } from "@/services";
 import { ArrowUpDownIcon } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -40,7 +40,6 @@ function createSearchParamsHelper(filterParams) {
 function StudentViewCoursesPage() {
   const [sort, setSort] = useState("price-lowtohigh");
   const [filters, setFilters] = useState({});
-  const [searchParams, setSearchParams] = useSearchParams();
   const {
     studentViewCoursesList,
     setStudentViewCoursesList,
@@ -82,7 +81,7 @@ function StudentViewCoursesPage() {
       ...filters,
       sortBy: sort,
     });
-    const response = await fetchStudentViewCourseListService(query);
+    const response = await fetchStudentViewCourseListService(query.toString());
     if (response?.success) {
       setStudentViewCoursesList(response?.data);
       setLoadingState(false);
@@ -97,16 +96,20 @@ function StudentViewCoursesPage() {
 
     if (response?.success) {
       if (response?.data) {
-        router.push(`/course-progress/${getCurrentCourseId}`);
+        router.push(`/student/course-progress?id=${getCurrentCourseId}`);
       } else {
-        router.push(`/course/details/${getCurrentCourseId}`);
+        router.push(`/student/course-details?id=${getCurrentCourseId}`);
       }
     }
   }
 
   useEffect(() => {
     const buildQueryStringForFilters = createSearchParamsHelper(filters);
-    setSearchParams(new URLSearchParams(buildQueryStringForFilters));
+    router.replace(
+      buildQueryStringForFilters
+        ? `/student/courses?${buildQueryStringForFilters}`
+        : "/student/courses"
+    );
   }, [filters]);
 
   useEffect(() => {
@@ -224,7 +227,7 @@ function StudentViewCoursesPage() {
                         } - ${courseItem?.level.toUpperCase()} Level`}
                       </p>
                       <p className="font-bold text-lg">
-                        ${courseItem?.pricing}
+                        ₦{courseItem?.pricing}
                       </p>
                     </div>
                   </CardContent>

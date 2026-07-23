@@ -213,17 +213,13 @@ export async function createPaymentService(
   return data;
 }
 
-export async function captureAndFinalizePaymentService(
-  paymentId: string,
-  payerId: string,
-  orderId: string
+export async function verifyAndFinalizePaymentService(
+  reference: string
 ): Promise<ApiResponse<any>> {
   const { data } = await axiosInstance.post<ApiResponse<any>>(
-    `/student/order/capture`,
+    `/student/order/verify`,
     {
-      paymentId,
-      payerId,
-      orderId,
+      reference,
     }
   );
   return data;

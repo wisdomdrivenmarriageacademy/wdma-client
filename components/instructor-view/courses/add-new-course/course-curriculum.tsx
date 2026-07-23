@@ -132,7 +132,7 @@ function CourseCurriculum() {
   }
 
   async function handleMediaBulkUpload(event) {
-    const selectedFiles = Array.from(event.target.files);
+    const selectedFiles = Array.from(event.target.files as FileList);
     const bulkFormData = new FormData();
 
     selectedFiles.forEach((fileItem) => bulkFormData.append("files", fileItem));
@@ -201,8 +201,6 @@ function CourseCurriculum() {
             onChange={handleMediaBulkUpload}
           />
           <Button
-            as="label"
-            htmlFor="bulk-media-upload"
             variant="outline"
             className="cursor-pointer"
             onClick={handleOpenBulkUploadDialog}

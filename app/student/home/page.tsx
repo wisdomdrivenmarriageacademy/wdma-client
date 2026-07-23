@@ -1,7 +1,6 @@
 "use client";
 
 import { courseCategories } from "@/config";
-import banner from "../../../../public/banner-img.png";
 import { Button } from "@/components/ui/button";
 import { useContext, useEffect } from "react";
 import { StudentContext } from "@/context/student-context";
@@ -27,11 +26,11 @@ function StudentHomePage() {
 
     sessionStorage.setItem("filters", JSON.stringify(currentFilter));
 
-    router.push("/courses");
+    router.push("/student/courses");
   }
 
   async function fetchAllStudentViewCourses() {
-    const response = await fetchStudentViewCourseListService();
+    const response = await fetchStudentViewCourseListService("");
     if (response?.success) setStudentViewCoursesList(response?.data);
   }
 
@@ -43,9 +42,9 @@ function StudentHomePage() {
 
     if (response?.success) {
       if (response?.data) {
-        navigate(`/course-progress/${getCurrentCourseId}`);
+        router.push(`/student/course-progress?id=${getCurrentCourseId}`);
       } else {
-        navigate(`/course/details/${getCurrentCourseId}`);
+        router.push(`/student/course-details?id=${getCurrentCourseId}`);
       }
     }
   }
@@ -63,14 +62,7 @@ function StudentHomePage() {
             Skills for your present and your future. Get Started with US
           </p>
         </div>
-        <div className="lg:w-full mb-8 lg:mb-0">
-          <img
-            src={banner}
-            width={600}
-            height={400}
-            className="w-full h-auto rounded-lg shadow-lg"
-          />
-        </div>
+        <div className="lg:w-full h-72 mb-8 lg:mb-0 rounded-lg bg-gradient-to-br from-gray-900 to-gray-600 shadow-lg" />
       </section>
       <section className="py-8 px-4 lg:px-8 bg-gray-100">
         <h2 className="text-2xl font-bold mb-6">Course Categories</h2>
@@ -108,7 +100,7 @@ function StudentHomePage() {
                     {courseItem?.instructorName}
                   </p>
                   <p className="font-bold text-[16px]">
-                    ${courseItem?.pricing}
+                    ₦{courseItem?.pricing}
                   </p>
                 </div>
               </div>
