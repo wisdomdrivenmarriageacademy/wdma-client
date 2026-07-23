@@ -1,17 +1,33 @@
-import { Outlet, useLocation } from "react-router-dom";
+"use client";
+
+import { AuthContext } from "@/context/auth-context";
+import { usePathname, useRouter } from "next/navigation";
+import { ReactNode, useContext, useEffect } from "react";
 import StudentViewCommonHeader from "./header";
 
-function StudentViewCommonLayout() {
-  const location = useLocation();
+export default function StudentViewCommonLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const authContext = useContext(AuthContext);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authContext?.auth.authenticate) {
+      router.replace("/auth/signin");
+    }
+  }, [authContext?.auth.authenticate, router]);
+
+  if (!authContext?.auth.authenticate) return null;
+
   return (
     <div>
-      {!location.pathname.includes("course-progress") ? (
+      {!pathname.includes("course-progress") ? (
         <StudentViewCommonHeader />
       ) : null}
-
-      <Outlet />
+      {children}
     </div>
   );
 }
-
-export default StudentViewCommonLayout;

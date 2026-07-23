@@ -85,6 +85,12 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function checkAuthUser() {
+    if (!sessionStorage.getItem("accessToken")) {
+      setAuth({ authenticate: false, user: null });
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await checkAuthService();
       if (response?.data?.user) {
@@ -92,8 +98,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
       } else {
         setAuth({ authenticate: false, user: null });
       }
-    } catch (error: any) {
-      console.error(error);
+    } catch {
       setAuth({ authenticate: false, user: null });
     } finally {
       setLoading(false);

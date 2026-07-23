@@ -136,21 +136,26 @@ function StudentViewCoursesPage() {
       <div className="flex flex-col md:flex-row gap-4">
         <aside className="w-full md:w-64 space-y-4">
           <div>
-            {Object.keys(filterOptions).map((ketItem) => (
-              <div className="p-4 border-b">
-                <h3 className="font-bold mb-3">{ketItem.toUpperCase()}</h3>
+            {Object.keys(filterOptions).map((keyItem) => (
+              <div key={keyItem} className="p-4 border-b">
+                <h3 className="font-bold mb-3">
+                  {keyItem.replace(/([A-Z])/g, " $1").toUpperCase()}
+                </h3>
                 <div className="grid gap-2 mt-2">
-                  {filterOptions[ketItem].map((option) => (
-                    <Label className="flex font-medium items-center gap-3">
+                  {filterOptions[keyItem].map((option) => (
+                    <Label
+                      key={option.id}
+                      className="flex font-medium items-center gap-3"
+                    >
                       <Checkbox
                         checked={
                           filters &&
                           Object.keys(filters).length > 0 &&
-                          filters[ketItem] &&
-                          filters[ketItem].indexOf(option.id) > -1
+                          filters[keyItem] &&
+                          filters[keyItem].indexOf(option.id) > -1
                         }
                         onCheckedChange={() =>
-                          handleFilterOnChange(ketItem, option)
+                          handleFilterOnChange(keyItem, option)
                         }
                       />
                       {option.label}
@@ -206,7 +211,8 @@ function StudentViewCoursesPage() {
                     <div className="w-48 h-32 flex-shrink-0">
                       <img
                         src={courseItem?.image}
-                        className="w-ful h-full object-cover"
+                        alt={courseItem?.title}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="flex-1">

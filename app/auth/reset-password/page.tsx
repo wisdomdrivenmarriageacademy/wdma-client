@@ -1,8 +1,9 @@
 "use client";
 
 import CommonForm from "@/components/common-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AuthShell from "@/components/auth-shell";
 import { resetPasswordService } from "@/services";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -52,23 +53,33 @@ export default function ResetPasswordPage() {
   const isValid = userEmail && token && formData.newPassword.length >= 6;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Set a new password</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error ? <p className="text-red-600 mb-3 text-sm">{error}</p> : null}
-          <CommonForm
-            formControls={controls as any}
-            buttonText={submitting ? "Updating..." : "Update Password"}
-            formData={formData}
-            setFormData={setFormData}
-            isButtonDisabled={!isValid || submitting}
-            handleSubmit={handleSubmit}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <AuthShell
+      eyebrow="Password update"
+      title="Choose a new password"
+      description="Use at least six characters and choose something you don’t use elsewhere."
+    >
+      {error ? (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+      <CommonForm
+        formControls={controls as any}
+        buttonText={submitting ? "Updating password..." : "Update password"}
+        formData={formData}
+        setFormData={setFormData}
+        isButtonDisabled={!isValid || submitting}
+        handleSubmit={handleSubmit}
+      />
+      <p className="mt-5 text-center text-sm text-[#6b766f]">
+        Back to{" "}
+        <Link
+          href="/auth/signin"
+          className="font-semibold text-[#173f2b] hover:underline"
+        >
+          sign in
+        </Link>
+      </p>
+    </AuthShell>
   );
 }

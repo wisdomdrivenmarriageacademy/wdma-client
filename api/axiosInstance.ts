@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const baseURL =
-  process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:5000";
+  process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:8000";
 
 const axiosInstance = axios.create({
   baseURL,
@@ -30,6 +30,11 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
+    const apiMessage = error.response?.data?.message;
+    if (typeof apiMessage === "string" && apiMessage) {
+      error.message = apiMessage;
+    }
+
     // Normalize common network/CORS errors for easier debugging
     if (error.message === "Network Error" || error.code === "ERR_NETWORK") {
       // Attach details to help track down baseURL / CORS issues

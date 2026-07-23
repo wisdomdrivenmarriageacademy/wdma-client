@@ -1,8 +1,9 @@
 "use client";
 
 import CommonForm from "@/components/common-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { verifyOtpService, requestPasswordResetService } from "@/services";
+import AuthShell from "@/components/auth-shell";
+import { verifyOtpService } from "@/services";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -31,10 +32,10 @@ export default function VerifyOtpPage() {
     try {
       const res = await verifyOtpService(userEmail, formData.code);
       if (res.success) {
-        // optionally request a reset token email directly
-        const req = await requestPasswordResetService(userEmail);
         router.replace(
-          `/auth/reset-password?email=${encodeURIComponent(userEmail)}`
+          `/auth/reset-password?email=${encodeURIComponent(
+            userEmail
+          )}&token=${encodeURIComponent(res.data.token)}`
         );
       } else {
         setError(res.message || "Invalid code");
@@ -49,23 +50,35 @@ export default function VerifyOtpPage() {
   const isValid = formData.code && userEmail;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Verify OTP</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error ? <p className="text-red-600 mb-3 text-sm">{error}</p> : null}
-          <CommonForm
-            formControls={controls as any}
-            buttonText={submitting ? "Verifying..." : "Verify"}
-            formData={formData}
-            setFormData={setFormData}
-            isButtonDisabled={!isValid || submitting}
-            handleSubmit={handleSubmit}
-          />
-        </CardContent>
-      </Card>
-    </div>
+    <AuthShell
+      eyebrow="Check your inbox"
+      title="Verify your email"
+      description={`Enter the six-digit code sent to ${
+        userEmail || "your email address"
+      }. It expires in 10 minutes.`}
+    >
+      {error ? (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+      <CommonForm
+        formControls={controls as any}
+        buttonText={submitting ? "Verifying..." : "Verify code"}
+        formData={formData}
+        setFormData={setFormData}
+        isButtonDisabled={!isValid || submitting}
+        handleSubmit={handleSubmit}
+      />
+      <p className="mt-5 text-center text-sm text-[#6b766f]">
+        Wrong email?{" "}
+        <Link
+          href="/auth/recovery"
+          className="font-semibold text-[#173f2b] hover:underline"
+        >
+          Go back
+        </Link>
+      </p>
+    </AuthShell>
   );
 }

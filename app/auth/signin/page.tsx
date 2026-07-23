@@ -1,7 +1,7 @@
 "use client";
 
 import CommonForm from "@/components/common-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AuthShell from "@/components/auth-shell";
 import { AuthContext } from "@/context/auth-context";
 import { loginService } from "@/services";
 import Link from "next/link";
@@ -61,31 +61,38 @@ export default function SignInPage() {
   const isValid = formData.userEmail && formData.password;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Sign in</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error ? <p className="text-red-600 mb-3 text-sm">{error}</p> : null}
-          <CommonForm
-            formControls={controls as any}
-            buttonText={submitting ? "Signing in..." : "Sign In"}
-            formData={formData}
-            setFormData={setFormData}
-            isButtonDisabled={!isValid || submitting}
-            handleSubmit={handleSubmit}
-          />
-          <div className="mt-4 text-sm flex justify-between">
-            <Link href="/auth/recovery" className="underline">
-              Forgot password?
-            </Link>
-            <Link href="/auth/signup" className="underline">
-              Create account
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <AuthShell
+      eyebrow="Welcome back"
+      title="Sign in to continue"
+      description="Return to your courses and pick up exactly where you left off."
+    >
+      {error ? (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+      <CommonForm
+        formControls={controls as any}
+        buttonText={submitting ? "Signing in..." : "Sign in"}
+        formData={formData}
+        setFormData={setFormData}
+        isButtonDisabled={!isValid || submitting}
+        handleSubmit={handleSubmit}
+      />
+      <div className="mt-5 flex justify-between text-sm">
+        <Link
+          href="/auth/recovery"
+          className="font-medium text-[#4f6658] hover:text-[#173f2b]"
+        >
+          Forgot password?
+        </Link>
+        <Link
+          href="/auth/signup"
+          className="font-semibold text-[#173f2b] hover:underline"
+        >
+          Create account
+        </Link>
+      </div>
+    </AuthShell>
   );
 }

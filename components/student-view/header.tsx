@@ -1,18 +1,20 @@
 import { GraduationCap, TvMinimalPlay } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { useContext } from "react";
 import { AuthContext } from "@/context/auth-context";
 
 function StudentViewCommonHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const authCtx = useContext(AuthContext);
   const resetCredentials = authCtx?.resetCredentials ?? (() => {});
 
   function handleLogout() {
     resetCredentials();
     sessionStorage.clear();
+    router.replace("/auth/signin");
   }
 
   return (
@@ -21,14 +23,14 @@ function StudentViewCommonHeader() {
         <Link href="/student/home" className="flex items-center hover:text-black">
           <GraduationCap className="h-8 w-8 mr-4 " />
           <span className="font-extrabold md:text-xl text-[14px]">
-            LMS LEARN
+            Wisdom Driven Academy
           </span>
         </Link>
         <div className="flex items-center space-x-1">
           <Button
             variant="ghost"
             onClick={() => {
-              if (!location.pathname.includes("/courses"))
+              if (!pathname.includes("/courses"))
                 router.push("/student/courses");
             }}
             className="text-[14px] md:text-[16px] font-medium"
@@ -39,15 +41,16 @@ function StudentViewCommonHeader() {
       </div>
       <div className="flex items-center space-x-4">
         <div className="flex gap-4 items-center">
-          <div
+          <Button
+            variant="ghost"
             onClick={() => router.push("/student/student-courses")}
-            className="flex cursor-pointer items-center gap-3"
+            className="flex items-center gap-2"
           >
-            <span className="font-extrabold md:text-xl text-[14px]">
+            <span className="font-semibold text-[14px] md:text-[16px]">
               My Courses
             </span>
-            <TvMinimalPlay className="w-8 h-8 cursor-pointer" />
-          </div>
+            <TvMinimalPlay className="size-5" />
+          </Button>
           <Button onClick={handleLogout}>Sign Out</Button>
         </div>
       </div>

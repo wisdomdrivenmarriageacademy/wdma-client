@@ -146,6 +146,7 @@ function StudentViewCourseDetailsPage() {
               {studentViewCourseDetails?.curriculum?.map(
                 (curriculumItem, index) => (
                   <li
+                    key={curriculumItem?._id || curriculumItem?.public_id}
                     className={`${
                       curriculumItem?.freePreview
                         ? "cursor-pointer"
@@ -220,6 +221,7 @@ function StudentViewCourseDetailsPage() {
               ?.filter((item) => item.freePreview)
               .map((filteredItem) => (
                 <p
+                  key={filteredItem?._id || filteredItem?.public_id}
                   onClick={() => handleSetFreePreview(filteredItem)}
                   className="cursor-pointer text-[16px] font-medium"
                 >

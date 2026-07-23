@@ -1,12 +1,11 @@
 "use client";
 
 import CommonForm from "@/components/common-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AuthContext } from "@/context/auth-context";
+import AuthShell from "@/components/auth-shell";
 import { registerService } from "@/services";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 const controls = [
   {
@@ -63,28 +62,33 @@ export default function SignUpPage() {
   const isValid = formData.userName && formData.userEmail && formData.password;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Create account</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error ? <p className="text-red-600 mb-3 text-sm">{error}</p> : null}
-          <CommonForm
-            formControls={controls as any}
-            buttonText={submitting ? "Creating..." : "Sign Up"}
-            formData={formData}
-            setFormData={setFormData}
-            isButtonDisabled={!isValid || submitting}
-            handleSubmit={handleSubmit}
-          />
-          <div className="mt-4 text-sm flex justify-between">
-            <Link href="/auth/signin" className="underline">
-              Sign in
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <AuthShell
+      eyebrow="Start learning"
+      title="Create your account"
+      description="Join the academy and begin learning at your own pace."
+    >
+      {error ? (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+      <CommonForm
+        formControls={controls as any}
+        buttonText={submitting ? "Creating account..." : "Create account"}
+        formData={formData}
+        setFormData={setFormData}
+        isButtonDisabled={!isValid || submitting}
+        handleSubmit={handleSubmit}
+      />
+      <p className="mt-5 text-center text-sm text-[#6b766f]">
+        Already have an account?{" "}
+        <Link
+          href="/auth/signin"
+          className="font-semibold text-[#173f2b] hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
+    </AuthShell>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import CommonForm from "@/components/common-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { requestOtpService, requestPasswordResetService } from "@/services";
+import AuthShell from "@/components/auth-shell";
+import { requestOtpService } from "@/services";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -48,28 +48,33 @@ export default function RecoveryPage() {
   const isValid = formData.userEmail;
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Account recovery</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error ? <p className="text-red-600 mb-3 text-sm">{error}</p> : null}
-          <CommonForm
-            formControls={controls as any}
-            buttonText={submitting ? "Sending..." : "Send OTP"}
-            formData={formData}
-            setFormData={setFormData}
-            isButtonDisabled={!isValid || submitting}
-            handleSubmit={handleSubmit}
-          />
-          <div className="mt-4 text-sm flex justify-between">
-            <Link href="/auth/signin" className="underline">
-              Back to sign in
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <AuthShell
+      eyebrow="Account recovery"
+      title="Let’s get you back in"
+      description="Enter the email connected to your account and we’ll send a six-digit verification code."
+    >
+      {error ? (
+        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+          {error}
+        </p>
+      ) : null}
+      <CommonForm
+        formControls={controls as any}
+        buttonText={submitting ? "Sending code..." : "Send verification code"}
+        formData={formData}
+        setFormData={setFormData}
+        isButtonDisabled={!isValid || submitting}
+        handleSubmit={handleSubmit}
+      />
+      <p className="mt-5 text-center text-sm text-[#6b766f]">
+        Remembered your password?{" "}
+        <Link
+          href="/auth/signin"
+          className="font-semibold text-[#173f2b] hover:underline"
+        >
+          Sign in
+        </Link>
+      </p>
+    </AuthShell>
   );
 }
