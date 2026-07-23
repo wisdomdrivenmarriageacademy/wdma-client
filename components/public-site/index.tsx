@@ -56,7 +56,7 @@ export const faqItems = [
 
 export function SiteHeader() {
   return (
-    <header className="relative z-50 border-b border-[#e4e2d9]/80 bg-[#f7f6f1]/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-[#e4e2d9]/80 bg-[#f7f6f1]/90 backdrop-blur">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
         <Link href="/" className="flex items-center gap-3" aria-label="WDMA home">
           <span className="grid size-10 place-items-center rounded-xl bg-[#173f2b] text-white shadow-sm">
