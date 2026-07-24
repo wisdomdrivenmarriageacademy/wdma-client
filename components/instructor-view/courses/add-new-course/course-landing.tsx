@@ -8,11 +8,14 @@ function CourseLanding() {
   const { courseLandingFormData, setCourseLandingFormData } =
     useContext(InstructorContext);
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Course Landing Page</CardTitle>
+    <Card className="border-0 shadow-none">
+      <CardHeader className="px-0">
+        <CardTitle>Course details</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Write a clear promise and enough context for learners to decide.
+        </p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         <FormControls
           formControls={courseLandingPageFormControls as any}
           formData={courseLandingFormData}

@@ -12,7 +12,7 @@ import {
   mediaDeleteService,
   mediaUploadService,
 } from "@/services";
-import { Upload } from "lucide-react";
+import { Plus, Trash2, Upload, Video } from "lucide-react";
 import { useContext, useRef } from "react";
 
 function CourseCurriculum() {
@@ -37,7 +37,7 @@ function CourseCurriculum() {
   }
 
   function handleCourseTitleChange(event, currentIndex) {
-    let cpyCourseCurriculumFormData = [...courseCurriculumFormData];
+    const cpyCourseCurriculumFormData = [...courseCurriculumFormData];
     cpyCourseCurriculumFormData[currentIndex] = {
       ...cpyCourseCurriculumFormData[currentIndex],
       title: event.target.value,
@@ -47,7 +47,7 @@ function CourseCurriculum() {
   }
 
   function handleFreePreviewChange(currentValue, currentIndex) {
-    let cpyCourseCurriculumFormData = [...courseCurriculumFormData];
+    const cpyCourseCurriculumFormData = [...courseCurriculumFormData];
     cpyCourseCurriculumFormData[currentIndex] = {
       ...cpyCourseCurriculumFormData[currentIndex],
       freePreview: currentValue,
@@ -70,7 +70,7 @@ function CourseCurriculum() {
           setMediaUploadProgressPercentage
         );
         if (response.success) {
-          let cpyCourseCurriculumFormData = [...courseCurriculumFormData];
+          const cpyCourseCurriculumFormData = [...courseCurriculumFormData];
           cpyCourseCurriculumFormData[currentIndex] = {
             ...cpyCourseCurriculumFormData[currentIndex],
             videoUrl: response?.data?.url,
@@ -79,14 +79,14 @@ function CourseCurriculum() {
           setCourseCurriculumFormData(cpyCourseCurriculumFormData);
           setMediaUploadProgress(false);
         }
-      } catch (error) {
-        console.log(error);
+      } catch {
+        setMediaUploadProgress(false);
       }
     }
   }
 
   async function handleReplaceVideo(currentIndex) {
-    let cpyCourseCurriculumFormData = [...courseCurriculumFormData];
+    const cpyCourseCurriculumFormData = [...courseCurriculumFormData];
     const getCurrentVideoPublicId =
       cpyCourseCurriculumFormData[currentIndex].public_id;
 
@@ -122,7 +122,7 @@ function CourseCurriculum() {
 
   function areAllCourseCurriculumFormDataObjectsEmpty(arr) {
     return arr.every((obj) => {
-      return Object.entries(obj).every(([key, value]) => {
+      return Object.values(obj).every((value) => {
         if (typeof value === "boolean") {
           return true;
         }
@@ -144,7 +144,6 @@ function CourseCurriculum() {
         setMediaUploadProgressPercentage
       );
 
-      console.log(response, "bulk");
       if (response?.success) {
         let cpyCourseCurriculumFormdata =
           areAllCourseCurriculumFormDataObjectsEmpty(courseCurriculumFormData)
@@ -165,8 +164,8 @@ function CourseCurriculum() {
         setCourseCurriculumFormData(cpyCourseCurriculumFormdata);
         setMediaUploadProgress(false);
       }
-    } catch (e) {
-      console.log(e);
+    } catch {
+      setMediaUploadProgress(false);
     }
   }
 
@@ -175,8 +174,14 @@ function CourseCurriculum() {
     const getCurrentSelectedVideoPublicId =
       cpyCourseCurriculumFormData[currentIndex].public_id;
 
-    const response = await mediaDeleteService(getCurrentSelectedVideoPublicId);
+    if (!getCurrentSelectedVideoPublicId) {
+      setCourseCurriculumFormData(
+        cpyCourseCurriculumFormData.filter((_, index) => index !== currentIndex)
+      );
+      return;
+    }
 
+    const response = await mediaDeleteService(getCurrentSelectedVideoPublicId);
     if (response?.success) {
       cpyCourseCurriculumFormData = cpyCourseCurriculumFormData.filter(
         (_, index) => index !== currentIndex
@@ -187,9 +192,14 @@ function CourseCurriculum() {
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row justify-between">
-        <CardTitle>Create Course Curriculum</CardTitle>
+    <Card className="border-0 shadow-none">
+      <CardHeader className="flex flex-col justify-between gap-4 px-0 sm:flex-row sm:items-center">
+        <div className="w-full sm:w-auto">
+          <CardTitle>Build the curriculum</CardTitle>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add lessons in viewing order and select at least one free preview.
+          </p>
+        </div>
         <div>
           <Input
             type="file"
@@ -202,20 +212,22 @@ function CourseCurriculum() {
           />
           <Button
             variant="outline"
-            className="cursor-pointer"
+            className="w-full cursor-pointer sm:w-auto"
             onClick={handleOpenBulkUploadDialog}
           >
-            <Upload className="w-4 h-5 mr-2" />
-            Bulk Upload
+            <Upload />
+            Upload multiple
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         <Button
+          variant="outline"
           disabled={!isCourseCurriculumFormDataValid() || mediaUploadProgress}
           onClick={handleNewLecture}
         >
-          Add Lecture
+          <Plus />
+          Add lesson
         </Button>
         {mediaUploadProgress ? (
           <MediaProgressbar
@@ -223,19 +235,25 @@ function CourseCurriculum() {
             progress={mediaUploadProgressPercentage}
           />
         ) : null}
-        <div className="mt-4 space-y-4">
+        <div className="mt-5 space-y-3">
           {courseCurriculumFormData.map((curriculumItem, index) => (
-            <div className="border p-5 rounded-md">
-              <div className="flex gap-5 items-center">
-                <h3 className="font-semibold">Lecture {index + 1}</h3>
+            <div
+              key={curriculumItem.public_id || `lesson-${index}`}
+              className="rounded-lg border bg-background p-4 md:p-5"
+            >
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full border text-xs font-medium text-muted-foreground">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <Input
                   name={`title-${index + 1}`}
-                  placeholder="Enter lecture title"
-                  className="max-w-96"
+                  aria-label={`Title for lesson ${index + 1}`}
+                  placeholder="Lesson title"
+                  className="flex-1"
                   onChange={(event) => handleCourseTitleChange(event, index)}
                   value={courseCurriculumFormData[index]?.title}
                 />
-                <div className="flex items-center space-x-2">
+                <div className="flex shrink-0 items-center space-x-2">
                   <Switch
                     onCheckedChange={(value) =>
                       handleFreePreviewChange(value, index)
@@ -244,37 +262,56 @@ function CourseCurriculum() {
                     id={`freePreview-${index + 1}`}
                   />
                   <Label htmlFor={`freePreview-${index + 1}`}>
-                    Free Preview
+                    Free preview
                   </Label>
                 </div>
               </div>
-              <div className="mt-6">
+              <div className="mt-4 border-t pt-4">
                 {courseCurriculumFormData[index]?.videoUrl ? (
-                  <div className="flex gap-3">
-                    <VideoPlayer
-                      url={courseCurriculumFormData[index]?.videoUrl}
-                      width="450px"
-                      height="200px"
-                    />
-                    <Button onClick={() => handleReplaceVideo(index)}>
-                      Replace Video
-                    </Button>
-                    <Button
-                      onClick={() => handleDeleteLecture(index)}
-                      className="bg-red-900"
-                    >
-                      Delete Lecture
-                    </Button>
+                  <div className="grid gap-4 md:grid-cols-[minmax(0,420px)_auto] md:items-start">
+                    <div className="aspect-video overflow-hidden rounded-lg bg-media">
+                      <VideoPlayer
+                        url={courseCurriculumFormData[index]?.videoUrl}
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-2 md:flex-col">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleReplaceVideo(index)}
+                      >
+                        <Upload />
+                        Replace
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive hover:text-destructive"
+                        onClick={() => handleDeleteLecture(index)}
+                      >
+                        <Trash2 />
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 ) : (
-                  <Input
-                    type="file"
-                    accept="video/*"
-                    onChange={(event) =>
-                      handleSingleLectureUpload(event, index)
-                    }
-                    className="mb-4"
-                  />
+                  <label className="flex min-h-28 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed bg-muted/20 px-4 text-center transition-colors hover:bg-muted/35">
+                    <Video className="size-5 text-muted-foreground" />
+                    <span className="mt-2 text-sm font-medium">
+                      Choose lesson video
+                    </span>
+                    <span className="mt-1 text-xs text-muted-foreground">
+                      Upload a video file from your device
+                    </span>
+                    <Input
+                      type="file"
+                      accept="video/*"
+                      onChange={(event) =>
+                        handleSingleLectureUpload(event, index)
+                      }
+                      className="sr-only"
+                    />
+                  </label>
                 )}
               </div>
             </div>

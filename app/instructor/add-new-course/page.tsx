@@ -3,6 +3,7 @@
 import CourseCurriculum from "@/components/instructor-view/courses/add-new-course/course-curriculum";
 import CourseLanding from "@/components/instructor-view/courses/add-new-course/course-landing";
 import CourseSettings from "@/components/instructor-view/courses/add-new-course/course-settings";
+import DashboardPageHeader from "@/components/dashboard-page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -10,15 +11,15 @@ import {
   courseCurriculumInitialFormData,
   courseLandingInitialFormData,
 } from "@/config";
-import { AuthContext } from "@/context/auth-context";
 import { InstructorContext } from "@/context/instructor-context";
 import {
   addNewCourseService,
   fetchInstructorCourseDetailsService,
   updateCourseByIdService,
 } from "@/services";
-import { useContext, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { ArrowLeft, CircleAlert, Save } from "lucide-react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 function AddNewCoursePage() {
   const {
@@ -30,12 +31,14 @@ function AddNewCoursePage() {
     setCurrentEditedCourseId,
   } = useContext(InstructorContext);
 
-  const authCtx = useContext(AuthContext);
-  const auth = authCtx?.auth;
   const router = useRouter();
-  const params = useParams<{ courseId?: string }>();
-
-  console.log(params);
+  const pathname = usePathname();
+  const courseId = useSearchParams().get("courseId");
+  const coursesPath = pathname.startsWith("/instructor")
+    ? "/instructor/courses"
+    : "/admin/courses";
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   function isEmpty(value: any) {
     if (Array.isArray(value)) {
@@ -72,9 +75,9 @@ function AddNewCoursePage() {
   }
 
   async function handleCreateCourse() {
+    setSaving(true);
+    setError("");
     const courseFinalFormData = {
-      instructorId: auth?.user?._id,
-      instructorName: auth?.user?.userName,
       date: new Date(),
       ...courseLandingFormData,
       students: [],
@@ -82,25 +85,29 @@ function AddNewCoursePage() {
       isPublised: true,
     };
 
-    const response =
-      currentEditedCourseId !== null
-        ? await updateCourseByIdService(
-            currentEditedCourseId,
-            courseFinalFormData
-          )
-        : await addNewCourseService(courseFinalFormData);
+    try {
+      const response =
+        currentEditedCourseId !== null
+          ? await updateCourseByIdService(
+              currentEditedCourseId,
+              courseFinalFormData
+            )
+          : await addNewCourseService(courseFinalFormData);
 
-    if (response?.success) {
-      setCourseLandingFormData(courseLandingInitialFormData);
-      setCourseCurriculumFormData(courseCurriculumInitialFormData);
-      router.back();
-      setCurrentEditedCourseId(null);
+      if (response?.success) {
+        setCourseLandingFormData(courseLandingInitialFormData);
+        setCourseCurriculumFormData(courseCurriculumInitialFormData);
+        setCurrentEditedCourseId(null);
+        router.push(coursesPath);
+      }
+    } catch {
+      setError("The course could not be saved. Review the content and try again.");
+    } finally {
+      setSaving(false);
     }
-
-    console.log(courseFinalFormData, "courseFinalFormData");
   }
 
-  async function fetchCurrentCourseDetails() {
+  const fetchCurrentCourseDetails = useCallback(async () => {
     const response = await fetchInstructorCourseDetailsService(
       currentEditedCourseId
     );
@@ -115,58 +122,104 @@ function AddNewCoursePage() {
         return acc;
       }, {});
 
-      console.log(setCourseFormData, response?.data, "setCourseFormData");
       setCourseLandingFormData(setCourseFormData);
       setCourseCurriculumFormData((response?.data as any)?.curriculum);
     }
-
-    console.log(response, "response");
-  }
+  }, [
+    currentEditedCourseId,
+    setCourseCurriculumFormData,
+    setCourseLandingFormData,
+  ]);
 
   useEffect(() => {
     if (currentEditedCourseId !== null) fetchCurrentCourseDetails();
-  }, [currentEditedCourseId]);
+  }, [currentEditedCourseId, fetchCurrentCourseDetails]);
 
   useEffect(() => {
-    if (params?.courseId) setCurrentEditedCourseId(params.courseId);
-  }, [params?.courseId]);
-
-  console.log(params, currentEditedCourseId, "params");
+    setCurrentEditedCourseId(courseId);
+  }, [courseId, setCurrentEditedCourseId]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between">
-        <h1 className="text-3xl font-extrabold mb-5">Create a new course</h1>
+    <div className="space-y-5 px-4 lg:px-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="-ml-2"
+        onClick={() => router.push(coursesPath)}
+      >
+        <ArrowLeft />
+        Course library
+      </Button>
+
+      <DashboardPageHeader
+        eyebrow="Course studio"
+        title={courseId ? "Refine your course" : "Create a learning experience"}
+        description="Shape the promise, lessons, and presentation learners will see."
+      >
         <Button
-          disabled={!validateFormData()}
-          className="text-sm tracking-wider font-bold px-8"
+          disabled={!validateFormData() || saving}
           onClick={handleCreateCourse}
         >
-          SUBMIT
+          <Save />
+          {saving
+            ? "Saving…"
+            : courseId
+              ? "Save changes"
+              : "Publish course"}
         </Button>
-      </div>
-      <Card>
-        <CardContent>
-          <div className="container mx-auto p-4">
-            <Tabs defaultValue="curriculum" className="space-y-4">
-              <TabsList>
-                <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
-                <TabsTrigger value="course-landing-page">
-                  Course Landing Page
+      </DashboardPageHeader>
+
+      {error ? (
+        <div className="flex items-start gap-2 rounded-md border border-destructive/25 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          <CircleAlert className="mt-0.5 size-4 shrink-0" />
+          {error}
+        </div>
+      ) : null}
+
+      {!validateFormData() ? (
+        <p className="text-xs text-muted-foreground">
+          Complete every course field, upload each lesson, add artwork, and
+          choose at least one free preview before publishing.
+        </p>
+      ) : null}
+
+      <Card className="gap-0 overflow-hidden py-0">
+        <CardContent className="p-0">
+          <Tabs defaultValue="course-landing-page">
+            <div className="overflow-x-auto border-b px-4 pt-3 md:px-6">
+              <TabsList className="h-10 w-max min-w-full justify-start bg-transparent p-0">
+                <TabsTrigger
+                  value="course-landing-page"
+                  className="rounded-none border-b-2 border-transparent px-4 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                >
+                  01 · Details
                 </TabsTrigger>
-                <TabsTrigger value="settings">Settings</TabsTrigger>
+                <TabsTrigger
+                  value="curriculum"
+                  className="rounded-none border-b-2 border-transparent px-4 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                >
+                  02 · Curriculum
+                </TabsTrigger>
+                <TabsTrigger
+                  value="settings"
+                  className="rounded-none border-b-2 border-transparent px-4 data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                >
+                  03 · Artwork
+                </TabsTrigger>
               </TabsList>
-              <TabsContent value="curriculum">
-                <CourseCurriculum />
-              </TabsContent>
-              <TabsContent value="course-landing-page">
+            </div>
+            <div className="p-4 md:p-6">
+              <TabsContent value="course-landing-page" className="mt-0">
                 <CourseLanding />
               </TabsContent>
-              <TabsContent value="settings">
+              <TabsContent value="curriculum" className="mt-0">
+                <CourseCurriculum />
+              </TabsContent>
+              <TabsContent value="settings" className="mt-0">
                 <CourseSettings />
               </TabsContent>
-            </Tabs>
-          </div>
+            </div>
+          </Tabs>
         </CardContent>
       </Card>
     </div>

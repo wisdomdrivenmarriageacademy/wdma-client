@@ -2,7 +2,12 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { initialSignInFormData, initialSignUpFormData } from "@/config";
-import { checkAuthService, loginService, registerService } from "@/services";
+import {
+  checkAuthService,
+  loginService,
+  registerService,
+  type AccountPreferences,
+} from "@/services";
 import {
   ReactNode,
   createContext,
@@ -21,6 +26,8 @@ interface User {
   userName: string;
   userEmail: string;
   role: string;
+  profileImage?: string;
+  preferences?: AccountPreferences;
 }
 
 interface AuthState {
@@ -113,6 +120,17 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     checkAuthUser();
   }, []);
+
+  useEffect(() => {
+    const theme = auth.user?.preferences?.theme;
+    if (!theme) return;
+    const dark =
+      theme === "dark" ||
+      (theme === "system" &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches);
+    document.documentElement.classList.toggle("dark", dark);
+    localStorage.setItem("wdma-theme", theme);
+  }, [auth.user?.preferences?.theme]);
 
   return (
     <AuthContext.Provider

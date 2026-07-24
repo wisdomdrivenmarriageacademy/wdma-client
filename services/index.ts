@@ -8,12 +8,7 @@ export interface ApiResponse<T> {
 
 export interface AuthPayload {
   accessToken: string;
-  user: {
-    _id: string;
-    userName: string;
-    userEmail: string;
-    role: string;
-  };
+  user: UserAccount;
 }
 
 export interface Course {
@@ -22,6 +17,76 @@ export interface Course {
   description: string;
   // Add more fields as needed
 }
+
+export interface UserAccount {
+  _id: string;
+  userName: string;
+  userEmail: string;
+  role: "user" | "instructor" | "admin";
+  profileImage?: string;
+  preferences?: AccountPreferences;
+}
+
+export interface AdminOrder {
+  _id: string;
+  userName: string;
+  userEmail: string;
+  courseTitle: string;
+  coursePricing: string;
+  paymentStatus: string;
+  paymentMethod: string;
+  paymentReference: string;
+  orderDate: string;
+}
+
+export interface AdminDashboardData {
+  period: { days: number; from: string; to: string };
+  totals: {
+    users: number;
+    students: number;
+    instructors: number;
+    administrators: number;
+    courses: number;
+    publishedCourses: number;
+    draftCourses: number;
+    lessons: number;
+    revenue: number;
+    paidOrders: number;
+    pendingOrders: number;
+    activeLearners: number;
+    completedCourses: number;
+    completionRate: number;
+  };
+  trend: {
+    date: string;
+    revenue: number;
+    enrollments: number;
+  }[];
+  topCourses: {
+    courseId: string;
+    title: string;
+    revenue: number;
+    enrollments: number;
+  }[];
+  recentOrders: AdminOrder[];
+}
+
+export interface AccountPreferences {
+  theme: "system" | "light" | "dark";
+  emailNotifications: boolean;
+  announcements: boolean;
+  roleActivity: boolean;
+  secondaryRoleActivity: boolean;
+  profileVisible: boolean;
+}
+
+export type AccountSettingsUpdate = Partial<AccountPreferences> & {
+  userName?: string;
+  userEmail?: string;
+  profileImage?: string;
+  currentPassword?: string;
+  newPassword?: string;
+};
 
 export interface UploadProgressEvent {
   loaded: number;
@@ -55,6 +120,24 @@ export async function checkAuthService(): Promise<ApiResponse<AuthPayload>> {
   const { data } = await axiosInstance.get<ApiResponse<AuthPayload>>(
     "/auth/check-auth"
   );
+  return data;
+}
+
+export async function getAccountSettingsService(): Promise<
+  ApiResponse<{ user: UserAccount }>
+> {
+  const { data } = await axiosInstance.get<
+    ApiResponse<{ user: UserAccount }>
+  >("/auth/settings");
+  return data;
+}
+
+export async function updateAccountSettingsService(
+  settings: AccountSettingsUpdate
+): Promise<ApiResponse<{ user: UserAccount }>> {
+  const { data } = await axiosInstance.patch<
+    ApiResponse<{ user: UserAccount }>
+  >("/auth/settings", settings);
   return data;
 }
 
@@ -270,6 +353,66 @@ export async function resetCourseProgressService(
       userId,
       courseId,
     }
+  );
+  return data;
+}
+
+export async function fetchAdminUsersService(
+  role?: UserAccount["role"]
+): Promise<ApiResponse<UserAccount[]>> {
+  const { data } = await axiosInstance.get<ApiResponse<UserAccount[]>>(
+    `/admin/users${role ? `?role=${role}` : ""}`
+  );
+  return data;
+}
+
+export async function updateUserRoleService(
+  userId: string,
+  role: UserAccount["role"]
+): Promise<ApiResponse<UserAccount>> {
+  const { data } = await axiosInstance.patch<ApiResponse<UserAccount>>(
+    `/admin/users/${userId}/role`,
+    { role }
+  );
+  return data;
+}
+
+export async function fetchAdminDashboardService(
+  days = 90
+): Promise<ApiResponse<AdminDashboardData>> {
+  const { data } = await axiosInstance.get<ApiResponse<AdminDashboardData>>(
+    `/admin/dashboard?days=${days}`
+  );
+  return data;
+}
+
+export async function fetchAdminOrdersService(params: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  search?: string;
+}): Promise<
+  ApiResponse<{
+    orders: AdminOrder[];
+    pagination: { page: number; limit: number; total: number; pages: number };
+  }>
+> {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", String(params.page));
+  if (params.limit) query.set("limit", String(params.limit));
+  if (params.status) query.set("status", params.status);
+  if (params.search) query.set("search", params.search);
+  const { data } = await axiosInstance.get(`/admin/orders?${query}`);
+  return data;
+}
+
+export async function updateAdminCoursePublicationService(
+  courseId: string,
+  published: boolean
+): Promise<ApiResponse<Course>> {
+  const { data } = await axiosInstance.patch<ApiResponse<Course>>(
+    `/admin/courses/${courseId}/publication`,
+    { published }
   );
   return data;
 }

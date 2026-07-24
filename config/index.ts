@@ -70,16 +70,16 @@ export const courseLevelOptions = [
 ];
 
 export const courseCategories = [
-  { id: "web-development", label: "Web Development" },
-  { id: "backend-development", label: "Backend Development" },
-  { id: "data-science", label: "Data Science" },
-  { id: "machine-learning", label: "Machine Learning" },
-  { id: "artificial-intelligence", label: "Artificial Intelligence" },
-  { id: "cloud-computing", label: "Cloud Computing" },
-  { id: "cyber-security", label: "Cyber Security" },
-  { id: "mobile-development", label: "Mobile Development" },
-  { id: "game-development", label: "Game Development" },
-  { id: "software-engineering", label: "Software Engineering" },
+  { id: "communication", label: "Communication" },
+  { id: "conflict-resolution", label: "Conflict Resolution" },
+  { id: "emotional-intimacy", label: "Emotional Intimacy" },
+  { id: "faith-and-marriage", label: "Faith & Marriage" },
+  { id: "financial-unity", label: "Financial Unity" },
+  { id: "parenting", label: "Parenting Together" },
+  { id: "premarital", label: "Premarital Preparation" },
+  { id: "healing-and-restoration", label: "Healing & Restoration" },
+  { id: "personal-growth", label: "Personal Growth" },
+  { id: "family-life", label: "Family Life" },
 ];
 
 export const courseLandingPageFormControls = [

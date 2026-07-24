@@ -47,7 +47,13 @@ export default function SignInPage() {
           JSON.stringify(res.data.accessToken)
         );
         authCtx?.setAuth({ authenticate: true, user: res.data.user });
-        router.replace("/student/home");
+        router.replace(
+          res.data.user.role === "admin"
+            ? "/admin"
+            : res.data.user.role === "instructor"
+              ? "/instructor"
+              : "/student/home"
+        );
       } else {
         setError("Invalid credentials");
       }
@@ -67,7 +73,7 @@ export default function SignInPage() {
       description="Return to your courses and pick up exactly where you left off."
     >
       {error ? (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+        <p className="mb-4 rounded-lg bg-destructive-muted px-3 py-2.5 text-sm text-destructive">
           {error}
         </p>
       ) : null}
@@ -82,13 +88,13 @@ export default function SignInPage() {
       <div className="mt-5 flex justify-between text-sm">
         <Link
           href="/auth/recovery"
-          className="font-medium text-[#4f6658] hover:text-[#173f2b]"
+          className="font-medium text-secondary-foreground hover:text-primary"
         >
           Forgot password?
         </Link>
         <Link
           href="/auth/signup"
-          className="font-semibold text-[#173f2b] hover:underline"
+          className="font-semibold text-primary hover:underline"
         >
           Create account
         </Link>

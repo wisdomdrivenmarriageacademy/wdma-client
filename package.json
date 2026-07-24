@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "predev": "node scripts/prepare-next-cache.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/prepare-next-cache.mjs --project",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"

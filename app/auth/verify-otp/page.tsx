@@ -58,7 +58,7 @@ export default function VerifyOtpPage() {
       }. It expires in 10 minutes.`}
     >
       {error ? (
-        <p className="mb-4 rounded-lg bg-red-50 px-3 py-2.5 text-sm text-red-700">
+        <p className="mb-4 rounded-lg bg-destructive-muted px-3 py-2.5 text-sm text-destructive">
           {error}
         </p>
       ) : null}
@@ -70,11 +70,11 @@ export default function VerifyOtpPage() {
         isButtonDisabled={!isValid || submitting}
         handleSubmit={handleSubmit}
       />
-      <p className="mt-5 text-center text-sm text-[#6b766f]">
+      <p className="mt-5 text-center text-sm text-muted-foreground">
         Wrong email?{" "}
         <Link
           href="/auth/recovery"
-          className="font-semibold text-[#173f2b] hover:underline"
+          className="font-semibold text-primary hover:underline"
         >
           Go back
         </Link>

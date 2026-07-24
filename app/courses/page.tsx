@@ -4,9 +4,8 @@ import {
   SiteFooter,
   SiteHeader,
 } from "@/components/public-site";
-import { Button } from "@/components/ui/button";
+import { PublicPrimaryCta } from "@/components/account-menu";
 import {
-  ArrowRight,
   Brain,
   Compass,
   HeartHandshake,
@@ -15,7 +14,6 @@ import {
   UsersRound,
 } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Learning",
@@ -70,7 +68,7 @@ const paths = [
 
 export default function CoursesPage() {
   return (
-    <main className="min-h-screen bg-white text-[#17251d]">
+    <main className="min-h-screen bg-card text-foreground">
       <SiteHeader />
       <PageIntro
         eyebrow="Learning at WDMA"
@@ -84,17 +82,17 @@ export default function CoursesPage() {
             {paths.map(({ icon: Icon, title, description, topics }) => (
               <article
                 key={title}
-                className="flex flex-col rounded-2xl border border-[#e2e0d7] bg-[#fbfaf6] p-7"
+                className="flex flex-col rounded-2xl border border-border bg-card p-7"
               >
-                <span className="grid size-11 place-items-center rounded-xl bg-[#e7efe4] text-[#2c6042]">
+                <span className="grid size-11 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Icon className="size-5" />
                 </span>
                 <h2 className="mt-7 text-xl font-semibold">{title}</h2>
-                <p className="mt-3 leading-7 text-[#68746c]">{description}</p>
-                <ul className="mt-6 grid gap-2 border-t border-[#e5e3da] pt-5 text-sm text-[#59675f]">
+                <p className="mt-3 leading-7 text-muted-foreground">{description}</p>
+                <ul className="mt-6 grid gap-2 border-t border-border pt-5 text-sm text-muted-foreground">
                   {topics.map((topic) => (
                     <li key={topic} className="flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-[#ca8d31]" />
+                      <span className="size-1.5 rounded-full bg-brand-gold" />
                       {topic}
                     </li>
                   ))}
@@ -103,26 +101,22 @@ export default function CoursesPage() {
             ))}
           </div>
 
-          <div className="mt-12 flex flex-col items-start justify-between gap-6 rounded-2xl border border-[#dfddd3] bg-white p-7 sm:flex-row sm:items-center sm:p-9">
+          <div className="mt-12 flex flex-col items-start justify-between gap-6 rounded-2xl border border-border bg-card p-7 sm:flex-row sm:items-center sm:p-9">
             <div>
               <h2 className="text-2xl font-semibold tracking-[-0.03em]">
                 Ready to see available courses?
               </h2>
-              <p className="mt-2 text-[#68746c]">
-                Sign in to browse the current course catalog and continue your
-                learning.
+              <p className="mt-2 text-muted-foreground">
+                Browse the current course catalog and continue learning at your
+                own pace.
               </p>
             </div>
-            <Button
-              asChild
-              size="lg"
-              className="bg-[#173f2b] text-white hover:bg-[#20533a]"
-            >
-              <Link href="/auth/signin">
-                Open course catalog
-                <ArrowRight />
-              </Link>
-            </Button>
+            <PublicPrimaryCta
+              signedOutHref="/auth/signin"
+              signedOutLabel="Open course catalog"
+              signedInLabel="Open course catalog"
+              className="shadow-sm"
+            />
           </div>
         </div>
       </section>

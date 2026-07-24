@@ -4,6 +4,15 @@ import "./globals.css";
 import AuthProvider from "@/context/auth-context";
 import InstructorProvider from "@/context/instructor-context";
 import StudentProvider from "@/context/student-context";
+import WhatsAppButton from "@/components/whatsapp-button";
+
+const themeScript = `
+try {
+  const saved = localStorage.getItem("wdma-theme");
+  const dark = saved === "dark" || ((!saved || saved === "system") && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", dark);
+} catch {}
+`;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +39,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -39,6 +51,7 @@ export default function RootLayout({
             <StudentProvider>{children}</StudentProvider>
           </InstructorProvider>
         </AuthProvider>
+        <WhatsAppButton />
       </body>
     </html>
   );

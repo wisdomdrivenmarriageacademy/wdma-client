@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function FaqPage() {
   return (
-    <main className="min-h-screen bg-white text-[#17251d]">
+    <main className="min-h-screen bg-card text-foreground">
       <SiteHeader />
       <PageIntro
         eyebrow="Frequently asked questions"
@@ -28,20 +28,20 @@ export default function FaqPage() {
       <section className="px-5 py-20 sm:px-8 sm:py-24">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[.65fr_1.35fr]">
           <aside>
-            <div className="sticky top-28 rounded-2xl bg-[#173f2b] p-7 text-white">
-              <p className="text-sm font-medium text-[#b6cfbd]">
+            <div className="sticky top-28 rounded-2xl bg-panel p-7 text-panel-foreground">
+              <p className="text-sm font-medium text-panel-muted">
                 Still have a question?
               </p>
               <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">
                 We are happy to help.
               </h2>
-              <p className="mt-3 text-sm leading-6 text-[#b6cfbd]">
+              <p className="mt-3 text-sm leading-6 text-panel-muted">
                 Send the team a message and include any details that will help
                 us understand what you need.
               </p>
               <Button
                 asChild
-                className="mt-6 bg-[#e7b558] text-[#2c2416] hover:bg-[#f0c36d]"
+                className="mt-6 bg-brand-gold text-brand-gold-foreground hover:bg-brand-gold-strong"
               >
                 <Link href="/contact">
                   Contact WDMA
@@ -51,16 +51,16 @@ export default function FaqPage() {
             </div>
           </aside>
 
-          <div className="divide-y divide-[#e2e0d8] border-y border-[#e2e0d8]">
+          <div className="divide-y divide-border border-y border-border">
             {faqItems.map((item) => (
               <details key={item.question} className="group py-6">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold [&::-webkit-details-marker]:hidden">
                   {item.question}
-                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#edf1e9] text-xl font-normal text-[#315943] transition-transform duration-150 group-open:rotate-45">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-full bg-secondary text-xl font-normal text-secondary-foreground transition-transform duration-150 group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="max-w-2xl pr-12 pt-4 leading-7 text-[#68746c]">
+                <p className="max-w-2xl pr-12 pt-4 leading-7 text-muted-foreground">
                   {item.answer}
                 </p>
               </details>

@@ -1,9 +1,10 @@
 import MediaProgressbar from "@/components/media-progress-bar";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { InstructorContext } from "@/context/instructor-context";
 import { mediaUploadService } from "@/services";
+import { ImagePlus } from "lucide-react";
 import { useContext } from "react";
 
 function CourseSettings() {
@@ -36,16 +37,19 @@ function CourseSettings() {
           });
           setMediaUploadProgress(false);
         }
-      } catch (e) {
-        console.log(e);
+      } catch {
+        setMediaUploadProgress(false);
       }
     }
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Course Settings</CardTitle>
+    <Card className="border-0 shadow-none">
+      <CardHeader className="px-0">
+        <CardTitle>Course artwork</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Use a calm, high-quality landscape image with minimal or no text.
+        </p>
       </CardHeader>
       <div className="p-4">
         {mediaUploadProgress ? (
@@ -55,18 +59,43 @@ function CourseSettings() {
           />
         ) : null}
       </div>
-      <CardContent>
+      <CardContent className="px-0">
         {courseLandingFormData?.image ? (
-          <img src={courseLandingFormData.image} />
+          <div className="space-y-4">
+            <div className="aspect-[16/7] max-w-3xl overflow-hidden rounded-xl border bg-muted">
+              <img
+                src={courseLandingFormData.image}
+                alt="Course artwork preview"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                setCourseLandingFormData({
+                  ...courseLandingFormData,
+                  image: "",
+                })
+              }
+            >
+              Replace artwork
+            </Button>
+          </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            <Label>Upload Course Image</Label>
+          <label className="flex min-h-56 max-w-3xl cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed bg-muted/20 px-6 text-center transition-colors hover:bg-muted/35">
+            <ImagePlus className="size-7 text-muted-foreground" />
+            <span className="mt-3 font-medium">Upload course artwork</span>
+            <span className="mt-1 text-sm text-muted-foreground">
+              Recommended ratio 16:9, JPG or PNG
+            </span>
             <Input
               onChange={handleImageUploadChange}
               type="file"
               accept="image/*"
+              className="sr-only"
             />
-          </div>
+          </label>
         )}
       </CardContent>
     </Card>

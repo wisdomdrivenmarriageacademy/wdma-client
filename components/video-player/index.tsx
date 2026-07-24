@@ -48,6 +48,12 @@ export default function VideoPlayer({
     if (!seeking) setPlayed(state.played);
   };
 
+  const handleEnded = () => {
+    setPlayed(1);
+    setPlaying(false);
+    onProgressUpdate?.({ ...progressData, progressValue: 1 });
+  };
+
   const seek = (offset: number) => {
     const current = playerRef.current?.getCurrentTime() ?? 0;
     playerRef.current?.seekTo(current + offset);
@@ -98,6 +104,11 @@ export default function VideoPlayer({
   }, []);
 
   useEffect(() => {
+    setPlayed(0);
+    setPlaying(false);
+  }, [url]);
+
+  useEffect(() => {
     if (played === 1 && onProgressUpdate) {
       onProgressUpdate({ ...progressData, progressValue: played });
     }
@@ -108,7 +119,7 @@ export default function VideoPlayer({
   return (
     <div
       ref={playerContainerRef}
-      className={`relative bg-gray-900 rounded-lg overflow-hidden shadow-2xl transition-all duration-300 ease-in-out ${
+      className={`relative overflow-hidden bg-media text-media-foreground ${
         isFullScreen ? "w-screen h-screen" : ""
       }`}
       style={{ width, height }}
@@ -125,10 +136,11 @@ export default function VideoPlayer({
         volume={volume}
         muted={muted}
         onProgress={handleProgress}
+        onEnded={handleEnded}
       />
 
       {showControls && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gray-800/75 p-4 transition-opacity duration-300">
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent px-4 pb-3 pt-12 transition-opacity duration-300">
           {/* Seek Slider */}
           <Slider
             value={[played * 100]}
@@ -141,22 +153,23 @@ export default function VideoPlayer({
 
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" onClick={handlePlayPause}>
+              <Button className="text-white hover:bg-white/10 hover:text-white" variant="ghost" size="icon" onClick={handlePlayPause}>
                 {playing ? (
                   <Pause className="h-6 w-6" />
                 ) : (
                   <Play className="h-6 w-6" />
                 )}
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => seek(-5)}>
+              <Button className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex" variant="ghost" size="icon" onClick={() => seek(-5)}>
                 <RotateCcw className="h-6 w-6" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => seek(5)}>
+              <Button className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex" variant="ghost" size="icon" onClick={() => seek(5)}>
                 <RotateCw className="h-6 w-6" />
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
+                className="text-white hover:bg-white/10 hover:text-white"
                 onClick={() => setMuted((m) => !m)}
               >
                 {muted ? (
@@ -170,15 +183,15 @@ export default function VideoPlayer({
                 max={100}
                 step={1}
                 onValueChange={handleVolumeChange}
-                className="w-24"
+                className="hidden w-24 sm:flex"
               />
             </div>
 
-            <div className="flex items-center space-x-2 text-white">
-              <span>
+            <div className="flex items-center space-x-2 text-media-foreground">
+              <span className="hidden text-xs text-white/70 sm:inline">
                 {formatTime(played * duration)} / {formatTime(duration)}
               </span>
-              <Button variant="ghost" size="icon" onClick={handleFullScreen}>
+              <Button className="text-white hover:bg-white/10 hover:text-white" variant="ghost" size="icon" onClick={handleFullScreen}>
                 {isFullScreen ? (
                   <Minimize className="h-6 w-6" />
                 ) : (
